@@ -1,0 +1,227 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Scanner;
+
+import javax.swing.text.html.parser.Parser;
+
+class Task{
+
+    private String description;
+    private Calendar startDate;
+    private Calendar endDate;
+    private String thatString;
+
+    public Task(){
+        description = "Default";
+        endDate = null;
+        startDate = null;
+    }
+    
+    public Task(String description){
+        this.description = description;
+        this.endDate = null;
+        this.startDate = null;
+    }
+    
+    public Task(String description, Calendar startDate, Calendar endDate){
+        this.description = description;
+    }
+    
+    public void setDescription(String description){
+        this.description = description;
+    }
+    
+    public String getDescription(){
+        return description;
+    }
+    
+    public void setStartDate(Calendar startDate){
+        this.startDate= startDate;
+    }
+    
+    public Calendar getStartDate(){
+        return startDate;
+    }
+    
+    public void setEndDate(Calendar endDate){
+        this.endDate= endDate;
+    }
+    
+    public Calendar getEndDate(){
+        return endDate;
+    }
+}
+
+class Display{
+
+    private String message;
+    private ArrayList<Task> taskList;
+
+    public Display(){
+        message = "";
+        taskList = null;
+    }
+    
+    public Display(String message, ArrayList<Task> taskList){
+        this.message = message;
+        this.taskList = taskList;
+    }
+    
+    public void setMessage(String message){
+        this.message = message;
+    }
+    
+    public String getMessage(){
+        return message;
+    }
+    
+    public void setList(ArrayList<Task> taskList){
+        this.taskList = taskList;
+    }
+    
+    public ArrayList<Task> getList(){
+        return taskList;
+    }
+}
+/*class TimedTask extends Task{
+
+    private Calendar startDate;
+    private Calendar endDate;
+
+    public TimedTask(){
+        this.setDescription("Default");
+        endDate = null;
+        startDate = null;
+    }
+    public TimedTask(String description, Calendar startDate, Calendar endDate){
+        this.setDescription(description);
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+    public void setStartDate(Calendar startDate){
+        this.startDate= startDate;
+    }
+    
+    public Calendar getStartDate(){
+        return startDate;
+    }
+    
+    public void setEndDate(Calendar endDate){
+        this.endDate= endDate;
+    }
+    
+    public Calendar getEndDate(){
+        return endDate;
+    }
+}*/
+
+public class Logic {
+    
+    private static final String MESSAGE_COMMAND_UNRECOGNISED = "Unrecognised Command";
+    private static final String MESSAGE_REDO = "Redid last command";
+    private static final String MESSAGE_ERROR_REDO = "Already at latest point";
+    private static final String MESSAGE_UNDO = "Undid last command";
+    private static final String COMMAND_INVALID = "invalid";
+    private static final String MESSAGE_NO_DESCRIPTION = "Please specify a description";
+    private static final String MESSAGE_ERROR_UNDO = "You have reached the earliest point possible";
+    private static final String COMMAND_REDO = "redo";
+    private static final String COMMAND_UNDO = "undo";
+    private static final String COMMA = ", ";
+    private static final String QUOTATION_MARKS = "\"";
+    private static final String MESSAGE_INVALID_TASK_NUMBER = "Pls enter a valid task number";
+    private static final String MESSAGE_ERROR_UPDATE_FILE = "Error occured while updating to file";
+    private static final String COMMAND_ADD = "add";
+    private static final String COMMAND_DELETE = "delete";
+    private static final String COMMAND_EDIT = "edit";
+    private static final String COMMAND_CLEAR = "clear";
+    private static final String COMMAND_SEARCH = "search";
+    private static final String COMMAND_EXIT = "exit";
+    private static final String MESSAGE_FILE_CREATED = "File created and ready for use";
+    private static final String MESSAGE_FILE_EXISTS = "File already exists";
+    private static final String MESSAGE_UNRECOGNISED_COMMAND = "Pls enter a valid command";
+    private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
+    private static final String MESSAGE_DELETED = "deleted from %1$s: ";
+    
+    private static ArrayList<ArrayList<Task>> oldTasks;
+    private static int oldTasksIndex;
+    private static ArrayList<Task> tasks;
+    private static ArrayList<String> rawUserInputs;
+    private static String textFile;
+    private static Command userCommand;
+    private static Display display;
+    
+    public static void main(String args[]) {
+        
+
+        System.out.println(myTask.getDescription());
+        
+    }
+    public static String createFile(String filePath) throws IOException {
+        try{
+            Storage.createFile(filePath);
+            return MESSAGE_FILE_CREATED;
+        }catch(IOException error){
+            return MESSAGE_FILE_EXISTS;
+        }
+    }
+    
+    public static Display initialiseProgram() throws IOException {
+        tasks = Storage.getList();
+        oldTasks.add(tasks);
+        oldTasksIndex = 0;
+        display.setList(tasks);
+        return display;
+    }
+    
+    public static Display handleCommand(String userInput) {
+        rawUserInputs.add(userInput);
+        userCommand = Parser.parseCommand(userInput);
+        return display;
+    }
+    
+    public static void executeUserCommand() {
+        switch(userCommand.getType()){
+        /*case COMMAND_ADD:
+            addTask();
+            
+        case COMMAND_DELETE:
+            deleteTask();
+            break;
+            
+        case COMMAND_UNDO:
+            undoCommand();
+            break;
+            
+        case COMMAND_REDO:
+            redoCommand();
+            break;
+            
+        case COMMAND_SEARCH:
+            searchCommand();
+            break;
+            
+        case COMMAND_EDIT:
+            editTask();
+            break;
+            
+            
+            
+        case COMMAND_EXIT:
+            return exitTextbuddy();
+            break;
+            
+            */
+        case COMMAND_INVALID:
+            setDisplay(MESSAGE_COMMAND_UNRECOGNISED, null);
+            break;
+            
+            
+        default:
+            setDisplay(MESSAGE_COMMAND_UNRECOGNISED, null);
+        }
+    }
+
+    
+}
