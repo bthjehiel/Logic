@@ -240,6 +240,66 @@ public class Logic {
              tasks = oldTasks.get(oldTasksIndex);
         }
     }
+    
+    public static void deleteTask(){
+        if(hasInvalidTaskNumbers()){
+            setDisplay(MESSAGE_INVALID_TASK_NUMBER, null);
+            return;
+        }
+        
+        ArrayList<String> deletedTasks = deleteTaskFromList();
+
+        if(updateFile()){
+            setDisplay(tasksDeletedMessage(deletedTasks),tasks);
+            saveList();
+        }
+        else{
+            setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+            tasks = oldTasks.get(oldTasksIndex);
+        }
+    }
+    
+    public static String tasksDeletedMessage(ArrayList<String> deletedTasks) {
+        String displayMessage = MESSAGE_DELETED;
+        for(int i = 0; i < deletedTasks.size(); i++){
+            displayMessage += QUOTATION_MARKS + deletedTasks.get(i) + QUOTATION_MARKS;
+            if(i != deletedTasks.size() - 2){
+                displayMessage += COMMA;
+            }
+        }
+        return displayMessage;
+    }
+    
+    public static ArrayList<String> deleteTaskFromList() {
+        ArrayList<String> deletedTasks = new ArrayList<String>();
+        Task deletedTask;
+        for(int i = userCommand.getTaskNum.size(); i>=0; i--){
+            deletedTask = tasks.remove(userCommand.getTaskNum.get(i-1) - 1);
+            deletedTasks.add(deletedTask.getDescription());
+        }
+        return deletedTasks;
+    }
+    
+    public static boolean updateFile() {
+        try{
+            Storage.editFile(tasks);
+            return true;
+        }catch(IOException error){
+            return false;
+        }
+    }
+        
+    public static boolean hasInvalidTaskNumbers() {
+        ArrayList<Integer> invalidTaskNumbers = new ArrayList<Integer>();
+        int tasknum;
+        for(int i = 0; i < userCommand.getTaskNum.size(); i++){
+            tasknum = userCommand.getTaskNum.get(i);
+            if((tasknum > tasks.size()) || (tasknum < 1)){
+                invalidTaskNumbers.add(tasknum);
+            }
+        }
+        return (invalidTaskNumbers.size() > 0);
+    }
 
     public static void addTaskToList(Calendar startDate, Calendar endDate) {
         
