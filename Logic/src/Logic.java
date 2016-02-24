@@ -195,11 +195,11 @@ public class Logic {
         case COMMAND_UNDO:
             undoCommand();
             break;
-            /*
+            
         case COMMAND_REDO:
             redoCommand();
             break;
-            
+            /*
         case COMMAND_SEARCH:
             searchCommand();
             break;
@@ -274,6 +274,27 @@ public class Logic {
             setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
             tasks = oldTasks.get(oldTasksIndex);
         }
+    }
+    
+    public static void redoCommand(){
+        if(atLastState()){
+            setDisplay(MESSAGE_ERROR_REDO, null);
+            return;
+        }
+        
+        tasks = oldTasks.get(oldTasksIndex + 1);
+        if(updateFile()){
+            setDisplay(MESSAGE_REDO,tasks);
+            oldTasksIndex++;
+        }
+        else{
+            setDisplay(MESSAGE_ERROR_UPDATE_FILE,null);
+            tasks = oldTasks.get(oldTasksIndex);
+        }
+    }
+    
+    public static boolean atLastState() {
+        return oldTasksIndex == (oldTasks.size() -1);
     }
     
     public static boolean atFirstState() {
