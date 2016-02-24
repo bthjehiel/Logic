@@ -187,7 +187,7 @@ public class Logic {
         switch(userCommand.getType()){
         case COMMAND_ADD:
             addTask();
-            /*
+            
         case COMMAND_DELETE:
             deleteTask();
             break;
@@ -195,7 +195,7 @@ public class Logic {
         case COMMAND_UNDO:
             undoCommand();
             break;
-            
+            /*
         case COMMAND_REDO:
             redoCommand();
             break;
@@ -257,6 +257,27 @@ public class Logic {
             setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
             tasks = oldTasks.get(oldTasksIndex);
         }
+    }
+    
+    public static void undoCommand(){
+        if(atFirstState()){
+            setDisplay(MESSAGE_ERROR_UNDO, null);
+            return;
+        }
+        
+        tasks = oldTasks.get(oldTasksIndex - 1);
+        if(updateFile()){
+            setDisplay(MESSAGE_UNDO,tasks);
+            oldTasksIndex--;
+        }
+        else{
+            setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+            tasks = oldTasks.get(oldTasksIndex);
+        }
+    }
+    
+    public static boolean atFirstState() {
+        return oldTasksIndex == 0;
     }
     
     public static String tasksDeletedMessage(ArrayList<String> deletedTasks) {
