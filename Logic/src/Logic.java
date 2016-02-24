@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 import javax.swing.text.html.parser.Parser;
 
+import tester.Task;
+
 class Task{
 
     private String description;
@@ -183,9 +185,9 @@ public class Logic {
     
     public static void executeUserCommand() {
         switch(userCommand.getType()){
-        /*case COMMAND_ADD:
+        case COMMAND_ADD:
             addTask();
-            
+            /*
         case COMMAND_DELETE:
             deleteTask();
             break;
@@ -223,5 +225,64 @@ public class Logic {
         }
     }
 
+    public static void addTask(){
+        /*if(userCommand.getDescription()== null){
+            return MESSAGE_NO_DESCRIPTION;
+        }*/
+        
+        addTaskToList(userCommand.getAddStartDate(), userCommand.getAddEndDate());
+        if(addToFile()){
+            setDisplay(MESSAGE_ADDED, tasks);
+            saveList();
+        }
+        else{
+             setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+             tasks = oldTasks.get(oldTasksIndex);
+        }
+    }
+
+    public static void addTaskToList(Calendar startDate, Calendar endDate) {
+        
+        if((startDate != null) && (endDate != null)){
+            addTimedTask(startDate, endDate);
+        }
+        else{
+            tasks.add(new Task(userCommand.getDescription()));
+        }
+    }
+
+    public static void addTimedTask(Calendar startDate, Calendar endDate) {
+        int i = 0;
+        for(i = 0; tasks.get(i).getStartDate()!= null; i++){
+            if(startDate.compareTo(tasks.get(i).getStartDate()) <= 0){
+                break;
+            }
+        }
+        tasks.add(i, new Task(userCommand.getDescription(), startDate, endDate));
+    }
+
+    public static boolean addToFile() {
+        try{
+            Storage.addTask(Task);
+            return true;
+        }catch(IOException error){
+            return false;
+        }
+    }
+
+    public static void saveList() {
+        if(oldTasksIndex < (oldTasksIndex -1)){
+            for(int i = (oldTasks.size() - 1); i > oldTasksIndex; i--){
+                oldTasks.remove(i);
+            }
+        }
+        oldTasks.add(tasks);
+        oldTasksIndex++;
+    }
+
+    public static void setDisplay(String message, ArrayList<Task> list) {
+        display.setMessage(message);
+        display.setList(list);
+    }
     
 }
