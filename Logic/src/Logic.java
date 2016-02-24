@@ -306,11 +306,13 @@ public class Logic {
         editEndDate();
         setDisplay(null, tasks);
     }
+    
     public static void editDescription() {
         if(userCommand.getDescription() != null){
             tasks.get(userCommand.getTaskNum() - 1).setDescription(userCommand.getDescription());
         }
     }
+    
     public static void editEndDate() {
         if(userCommand.getAddEndDate != null){
             tasks.get(userCommand.getTaskNum() - 1).setEndDate(userCommand.getAddEndDate());
@@ -319,6 +321,7 @@ public class Logic {
             tasks.get(userCommand.getTaskNum() - 1).setEndDate(null);
         }
     }
+    
     public static void editStartDate() {
         if(userCommand.getAddStartDate != null){
             tasks.get(userCommand.getTaskNum() - 1).setStartDate(userCommand.getAddStartDate());
