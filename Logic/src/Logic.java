@@ -203,11 +203,11 @@ public class Logic {
         case COMMAND_SEARCH:
             searchCommand();
             break;
-            /*
+            
         case COMMAND_EDIT:
             editTask();
             break;
-            
+            /*
         case COMMAND_EXIT:
             return exitTextbuddy();
             break;
@@ -294,6 +294,38 @@ public class Logic {
     public static void searchCommand(){
         ArrayList<Task> tasksContainingKeyword = getTasksContainingKeyword();
         setDisplay(null, tasksContainingKeyword);
+    }
+    
+    public static void editTask(){
+        if(hasInvalidTaskNumbers()){
+            setDisplay(MESSAGE_INVALID_TASK_NUMBER, null);
+            return;
+        }
+        editDescription();
+        editStartDate();
+        editEndDate();
+        setDisplay(null, tasks);
+    }
+    public static void editDescription() {
+        if(userCommand.getDescription() != null){
+            tasks.get(userCommand.getTaskNum() - 1).setDescription(userCommand.getDescription());
+        }
+    }
+    public static void editEndDate() {
+        if(userCommand.getAddEndDate != null){
+            tasks.get(userCommand.getTaskNum() - 1).setEndDate(userCommand.getAddEndDate());
+        }
+        if(userCommand.getDeleteEndDate != null){
+            tasks.get(userCommand.getTaskNum() - 1).setEndDate(null);
+        }
+    }
+    public static void editStartDate() {
+        if(userCommand.getAddStartDate != null){
+            tasks.get(userCommand.getTaskNum() - 1).setStartDate(userCommand.getAddStartDate());
+        }
+        if(userCommand.getDeleteStartDate != null){
+            tasks.get(userCommand.getTaskNum() - 1).setStartDate(null);
+        }
     }
     
     public static ArrayList<Task> getTasksContainingKeyword() {
@@ -400,5 +432,4 @@ public class Logic {
         display.setMessage(message);
         display.setList(list);
     }
-    
 }
