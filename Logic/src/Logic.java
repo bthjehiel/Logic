@@ -199,16 +199,14 @@ public class Logic {
         case COMMAND_REDO:
             redoCommand();
             break;
-            /*
+            
         case COMMAND_SEARCH:
             searchCommand();
             break;
-            
+            /*
         case COMMAND_EDIT:
             editTask();
             break;
-            
-            
             
         case COMMAND_EXIT:
             return exitTextbuddy();
@@ -291,6 +289,22 @@ public class Logic {
             setDisplay(MESSAGE_ERROR_UPDATE_FILE,null);
             tasks = oldTasks.get(oldTasksIndex);
         }
+    }
+    
+    public static void searchCommand(){
+        ArrayList<Task> tasksContainingKeyword = getTasksContainingKeyword();
+        setDisplay(null, tasksContainingKeyword);
+    }
+    
+    public static ArrayList<Task> getTasksContainingKeyword() {
+        String keyword = userCommand.getDescription();
+        ArrayList<Task> tasksContainingKeyword = new ArrayList<Task>();
+        for(int i = 0; i < tasks.size(); i++){
+            if(tasks.get(i).getDescription().contains(keyword)){
+                tasksContainingKeyword.add(tasks.get(i));
+            }
+        }
+        return tasksContainingKeyword;
     }
     
     public static boolean atLastState() {
