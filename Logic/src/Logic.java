@@ -1,12 +1,9 @@
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Scanner;
 
 import javax.swing.text.html.parser.Parser;
 
-import tester.Task;
 
 class Task{
 
@@ -87,6 +84,47 @@ class Display{
         return taskList;
     }
 }
+
+class Command{
+
+    private String type;
+    private String description;
+    private ArrayList<Integer> taskNum;
+    private Calendar addStartDate;
+    private Calendar addEndDate;
+    
+    public Command(){
+        type = null;
+        description = null;
+        taskNum = null;
+        addStartDate = null;
+        addEndDate = null;
+    }
+    
+    public Command(String type, String description, ArrayList<Integer> taskNum, Calendar addStartDate, Calendar addEndDate){
+        this.type = type;
+        this.description = description;
+        this.taskNum = taskNum;
+        this.addStartDate = addStartDate;
+        this.addEndDate = addEndDate;
+    }
+    
+    public String getType(){
+        return type;
+    }
+    public String getDescription(){
+        return description;
+    }
+    public ArrayList<Integer> getTaskNum(){
+        return taskNum;
+    }
+    public Calendar getAddStartDate(){
+        return addStartDate;
+    }
+    public Calendar getAddEndDate(){
+        return addEndDate;
+    }
+}
 /*class TimedTask extends Task{
 
     private Calendar startDate;
@@ -137,7 +175,6 @@ public class Logic {
     private static final String COMMAND_ADD = "add";
     private static final String COMMAND_DELETE = "delete";
     private static final String COMMAND_EDIT = "edit";
-    private static final String COMMAND_CLEAR = "clear";
     private static final String COMMAND_SEARCH = "search";
     private static final String COMMAND_EXIT = "exit";
     private static final String MESSAGE_FILE_CREATED = "File created and ready for use";
@@ -149,6 +186,7 @@ public class Logic {
     private static ArrayList<ArrayList<Task>> oldTasks;
     private static int oldTasksIndex;
     private static ArrayList<Task> tasks;
+    private static Task addTask;
     private static ArrayList<String> rawUserInputs;
     private static String textFile;
     private static Command userCommand;
@@ -207,12 +245,7 @@ public class Logic {
         case COMMAND_EDIT:
             editTask();
             break;
-            /*
-        case COMMAND_EXIT:
-            return exitTextbuddy();
-            break;
             
-            */
         case COMMAND_INVALID:
             setDisplay(MESSAGE_COMMAND_UNRECOGNISED, null);
             break;
@@ -309,25 +342,25 @@ public class Logic {
     
     public static void editDescription() {
         if(userCommand.getDescription() != null){
-            tasks.get(userCommand.getTaskNum() - 1).setDescription(userCommand.getDescription());
+            tasks.get(userCommand.getTaskNum().get(0) - 1).setDescription(userCommand.getDescription());
         }
     }
     
     public static void editEndDate() {
-        if(userCommand.getAddEndDate != null){
-            tasks.get(userCommand.getTaskNum() - 1).setEndDate(userCommand.getAddEndDate());
+        if(userCommand.getAddEndDate() != null){
+            tasks.get(userCommand.getTaskNum().get(0) - 1).setEndDate(userCommand.getAddEndDate());
         }
-        if(userCommand.getDeleteEndDate != null){
-            tasks.get(userCommand.getTaskNum() - 1).setEndDate(null);
+        if(userCommand.getDeleteEndDate() != null){
+            tasks.get(userCommand.getTaskNum().get(0) - 1).setEndDate(null);
         }
     }
     
     public static void editStartDate() {
-        if(userCommand.getAddStartDate != null){
-            tasks.get(userCommand.getTaskNum() - 1).setStartDate(userCommand.getAddStartDate());
+        if(userCommand.getAddStartDate() != null){
+            tasks.get(userCommand.getTaskNum().get(0) - 1).setStartDate(userCommand.getAddStartDate());
         }
-        if(userCommand.getDeleteStartDate != null){
-            tasks.get(userCommand.getTaskNum() - 1).setStartDate(null);
+        if(userCommand.getDeleteStartDate() != null){
+            tasks.get(userCommand.getTaskNum().get(0) - 1).setStartDate(null);
         }
     }
     
@@ -364,8 +397,8 @@ public class Logic {
     public static ArrayList<String> deleteTaskFromList() {
         ArrayList<String> deletedTasks = new ArrayList<String>();
         Task deletedTask;
-        for(int i = userCommand.getTaskNum.size(); i>=0; i--){
-            deletedTask = tasks.remove(userCommand.getTaskNum.get(i-1) - 1);
+        for(int i = userCommand.getTaskNum().size(); i>=0; i--){
+            deletedTask = tasks.remove(userCommand.getTaskNum().get(i-1) - 1);
             deletedTasks.add(deletedTask.getDescription());
         }
         return deletedTasks;
@@ -383,8 +416,8 @@ public class Logic {
     public static boolean hasInvalidTaskNumbers() {
         ArrayList<Integer> invalidTaskNumbers = new ArrayList<Integer>();
         int tasknum;
-        for(int i = 0; i < userCommand.getTaskNum.size(); i++){
-            tasknum = userCommand.getTaskNum.get(i);
+        for(int i = 0; i < userCommand.getTaskNum().size(); i++){
+            tasknum = userCommand.getTaskNum().get(i);
             if((tasknum > tasks.size()) || (tasknum < 1)){
                 invalidTaskNumbers.add(tasknum);
             }
@@ -398,7 +431,8 @@ public class Logic {
             addTimedTask(startDate, endDate);
         }
         else{
-            tasks.add(new Task(userCommand.getDescription()));
+            addTask = new Task(userCommand.getDescription());
+            tasks.add(addTask);
         }
     }
 
@@ -409,12 +443,13 @@ public class Logic {
                 break;
             }
         }
-        tasks.add(i, new Task(userCommand.getDescription(), startDate, endDate));
+        addTask = new Task(userCommand.getDescription(), startDate, endDate);
+        tasks.add(i, addTask);
     }
 
     public static boolean addToFile() {
         try{
-            Storage.addTask(Task);
+            Storage.addTask(addTask);
             return true;
         }catch(IOException error){
             return false;
