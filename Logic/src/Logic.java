@@ -10,22 +10,33 @@ class Task{
     private String description;
     private Calendar startDate;
     private Calendar endDate;
-    private String thatString;
+    private ArrayList<String> tags;
 
     public Task(){
         description = "Default";
         endDate = null;
         startDate = null;
+        tags = null;
     }
     
     public Task(String description){
         this.description = description;
         this.endDate = null;
         this.startDate = null;
+        this.tags = null;
     }
     
     public Task(String description, Calendar startDate, Calendar endDate){
         this.description = description;
+        this.endDate = endDate;
+        this.startDate = startDate;
+    }
+    
+    public Task(String description, Calendar startDate, Calendar endDate, ArrayList<String> tags){
+        this.description = description;
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.tags = tags;
     }
     
     public void setDescription(String description){
@@ -50,6 +61,14 @@ class Task{
     
     public Calendar getEndDate(){
         return endDate;
+    }
+    
+    public void setTags(ArrayList<String> tags){
+        this.tags= tags;
+    }
+    
+    public ArrayList<String> getTags(){
+        return tags;
     }
 }
 
@@ -92,6 +111,9 @@ class Command{
     private ArrayList<Integer> taskNum;
     private Calendar addStartDate;
     private Calendar addEndDate;
+    private Calendar deleteStartDate;
+    private Calendar deleteEndDate;
+    private ArrayList<String> tags;
     
     public Command(){
         type = null;
@@ -123,6 +145,15 @@ class Command{
     }
     public Calendar getAddEndDate(){
         return addEndDate;
+    }
+    public Calendar getDeleteStartDate(){
+        return addStartDate;
+    }
+    public Calendar getDeleteEndDate(){
+        return addEndDate;
+    }
+    public ArrayList<String> getTags(){
+        return tags;
     }
 }
 /*class TimedTask extends Task{
@@ -159,29 +190,33 @@ class Command{
 
 public class Logic {
     
-    private static final String MESSAGE_COMMAND_UNRECOGNISED = "Unrecognised Command";
-    private static final String MESSAGE_REDO = "Redid last command";
-    private static final String MESSAGE_ERROR_REDO = "Already at latest point";
-    private static final String MESSAGE_UNDO = "Undid last command";
-    private static final String COMMAND_INVALID = "invalid";
-    private static final String MESSAGE_NO_DESCRIPTION = "Please specify a description";
-    private static final String MESSAGE_ERROR_UNDO = "You have reached the earliest point possible";
-    private static final String COMMAND_REDO = "redo";
-    private static final String COMMAND_UNDO = "undo";
     private static final String COMMA = ", ";
     private static final String QUOTATION_MARKS = "\"";
-    private static final String MESSAGE_INVALID_TASK_NUMBER = "Pls enter a valid task number";
-    private static final String MESSAGE_ERROR_UPDATE_FILE = "Error occured while updating to file";
+    
     private static final String COMMAND_ADD = "add";
     private static final String COMMAND_DELETE = "delete";
     private static final String COMMAND_EDIT = "edit";
     private static final String COMMAND_SEARCH = "search";
+    private static final String COMMAND_REDO = "redo";
+    private static final String COMMAND_UNDO = "undo";
+    private static final String COMMAND_INVALID = "invalid";
     private static final String COMMAND_EXIT = "exit";
+    
     private static final String MESSAGE_FILE_CREATED = "File created and ready for use";
-    private static final String MESSAGE_FILE_EXISTS = "File already exists";
-    private static final String MESSAGE_UNRECOGNISED_COMMAND = "Pls enter a valid command";
     private static final String MESSAGE_ADDED = "added to %1$s: \"%2$s\"";
     private static final String MESSAGE_DELETED = "deleted from %1$s: ";
+    private static final String MESSAGE_REDO = "Redid last command";
+    private static final String MESSAGE_UNDO = "Undid last command";
+    
+    private static final String MESSAGE_ERROR_NO_DESCRIPTION = "Please specify a description";
+    private static final String MESSAGE_ERROR_UNRECOGNISED_COMMAND = "Pls enter a valid command";
+    private static final String MESSAGE_ERROR_FILE_EXISTS = "File already exists";
+    private static final String MESSAGE_ERROR_INVALID_TASK_NUMBER = "Pls enter a valid task number";
+    private static final String MESSAGE_ERROR_READING_FILE = "Error occured while reading file";
+    private static final String MESSAGE_ERROR_WRITING_FILE = "Error occured while updating to file";
+    private static final String MESSAGE_ERROR_UNDO = "You have reached the earliest point possible";
+    private static final String MESSAGE_ERROR_REDO = "You have reached the latest point possible";
+    private static final String MESSAGE_ERROR_COMMAND_UNRECOGNISED = "Unrecognised Command";
     
     private static ArrayList<ArrayList<Task>> oldTasks;
     private static int oldTasksIndex;
@@ -193,25 +228,26 @@ public class Logic {
     private static Display display;
     
     public static void main(String args[]) {
-        
-
-        System.out.println(myTask.getDescription());
-        
+        //System.out.println(myTask.getDescription());
     }
-    public static String createFile(String filePath) throws IOException {
+    public static String createFile(String filePath){
         try{
             Storage.createFile(filePath);
             return MESSAGE_FILE_CREATED;
         }catch(IOException error){
-            return MESSAGE_FILE_EXISTS;
+            return MESSAGE_ERROR_FILE_EXISTS;
         }
     }
     
     public static Display initialiseProgram() throws IOException {
-        tasks = Storage.getList();
+        try{
+            tasks = Storage.getList();
+        }catch(IOException error){
+            setDisplay(MESSAGE_ERROR_READING_FILE, null);
+        }
         oldTasks.add(tasks);
         oldTasksIndex = 0;
-        display.setList(tasks);
+        setDisplay(null, tasks);
         return display;
     }
     
@@ -247,12 +283,11 @@ public class Logic {
             break;
             
         case COMMAND_INVALID:
-            setDisplay(MESSAGE_COMMAND_UNRECOGNISED, null);
+            setDisplay(MESSAGE_ERROR_COMMAND_UNRECOGNISED, null);
             break;
             
-            
         default:
-            setDisplay(MESSAGE_COMMAND_UNRECOGNISED, null);
+            setDisplay(MESSAGE_ERROR_COMMAND_UNRECOGNISED, null);
         }
     }
 
@@ -267,14 +302,14 @@ public class Logic {
             saveList();
         }
         else{
-             setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+             setDisplay(MESSAGE_ERROR_WRITING_FILE, null);
              tasks = oldTasks.get(oldTasksIndex);
         }
     }
     
     public static void deleteTask(){
         if(hasInvalidTaskNumbers()){
-            setDisplay(MESSAGE_INVALID_TASK_NUMBER, null);
+            setDisplay(MESSAGE_ERROR_INVALID_TASK_NUMBER, null);
             return;
         }
         
@@ -285,7 +320,7 @@ public class Logic {
             saveList();
         }
         else{
-            setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+            setDisplay(MESSAGE_ERROR_WRITING_FILE, null);
             tasks = oldTasks.get(oldTasksIndex);
         }
     }
@@ -302,7 +337,7 @@ public class Logic {
             oldTasksIndex--;
         }
         else{
-            setDisplay(MESSAGE_ERROR_UPDATE_FILE, null);
+            setDisplay(MESSAGE_ERROR_WRITING_FILE, null);
             tasks = oldTasks.get(oldTasksIndex);
         }
     }
@@ -319,19 +354,25 @@ public class Logic {
             oldTasksIndex++;
         }
         else{
-            setDisplay(MESSAGE_ERROR_UPDATE_FILE,null);
+            setDisplay(MESSAGE_ERROR_WRITING_FILE,null);
             tasks = oldTasks.get(oldTasksIndex);
         }
     }
     
     public static void searchCommand(){
-        ArrayList<Task> tasksContainingKeyword = getTasksContainingKeyword();
-        setDisplay(null, tasksContainingKeyword);
+        ArrayList<Task> searchedTasks = null;
+        if((userCommand.getTags() == null) && (userCommand.getDescription() != null)){
+            searchedTasks = getTasksContainingKeyword();
+        }
+        /*else if((userCommand.getTags() != null) && (userCommand.getDescription() == null)){
+            searchedTasks = getTasksContainingTags();
+        }*/
+        setDisplay(null, searchedTasks);
     }
     
     public static void editTask(){
         if(hasInvalidTaskNumbers()){
-            setDisplay(MESSAGE_INVALID_TASK_NUMBER, null);
+            setDisplay(MESSAGE_ERROR_INVALID_TASK_NUMBER, null);
             return;
         }
         editDescription();
@@ -374,6 +415,22 @@ public class Logic {
         }
         return tasksContainingKeyword;
     }
+    
+    /*public static ArrayList<Task> getTasksContainingTags() {
+        String keyword = userCommand.getDescription();
+        ArrayList<Task> tasksContainingKeyword = new ArrayList<Task>();
+        for(int i = 0; i < tasks.size(); i++){
+            for(int j = 0; j < tags.size(); j++){
+                if(tasks.get(i).getTags().contains(keyword)){
+                    tasksContainingKeyword.add(tasks.get(i));
+                }
+            }/*
+            if(tasks.get(i).getTags().contains(keyword)){
+                tasksContainingKeyword.add(tasks.get(i));
+            }*//*
+        }
+        return tasksContainingKeyword;
+    }*/
     
     public static boolean atLastState() {
         return oldTasksIndex == (oldTasks.size() -1);
