@@ -39,7 +39,7 @@ class InvalidCommand extends Command{
 class AddFloatCommand extends Command{
     private String description;
     private ArrayList<String> tags;
-    private final String MESSAGE_SUCCESS = "added to %1$s: \"%2$s\"";
+    private final String MESSAGE_SUCCESS = "added: \"%2$s\"";
     private final String MESSAGE_ERROR = "Error occured while updating to file";
     
     public AddFloatCommand(){
@@ -80,7 +80,7 @@ class AddFloatCommand extends Command{
         taskList.add(new Task(description, tags));
         if(updateFile(taskList)){
             History.saveList(taskList);
-            setDisplay(String.format(MESSAGE_SUCCESS, Storage.getFilePath(), description), taskList);
+            setDisplay(String.format(MESSAGE_SUCCESS, description), taskList);
         }
         else{
             setDisplay(MESSAGE_ERROR, null);
@@ -124,7 +124,7 @@ class AddTimedCommand extends AddFloatCommand{
         taskList = addTaskToList(taskList);
         if(updateFile(taskList)){
             History.saveList(taskList);
-            setDisplay(String.format(getSuccessMessage(), Storage.getFilePath(), getDescription()), taskList);
+            setDisplay(String.format(getSuccessMessage(), getDescription()), taskList);
         }
         else{
             setDisplay(getErrorMessage(), null);
@@ -147,7 +147,7 @@ class AddTimedCommand extends AddFloatCommand{
 class DeleteCommand extends Command{
     private ArrayList<Integer> taskNumbers;
     private String invalidTaskNumbersMessage = "You have specified invalid task numbers: ";
-    private String deletedMessage = "deleted from %1$s: ";
+    private String deletedMessage = "deleted: ";
     private final String MESSAGE_ERROR = "Error occured while updating to file";
     
     public DeleteCommand(){
@@ -168,7 +168,7 @@ class DeleteCommand extends Command{
 
         if(updateFile(taskList)){
             History.saveList(taskList);
-            setDisplay(String.format(deletedMessage, Storage.getFilePath()),taskList);
+            setDisplay(deletedMessage, taskList);
         }
         else{
             setDisplay(MESSAGE_ERROR, null);
