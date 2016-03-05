@@ -1,149 +1,16 @@
 /*
  * Written by Boh Tuang Hwee, Jehiel (A0139995E)
- * Last updated: 3/4/2016, 4:30AM
+ * Last updated: 3/5/2016, 8:00pm
  * CS2103
  */
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-
-class Command{
-    private Display display;
-    
-    public Command(){
-    }
-    
-    public Display getDisplay() {
+public abstract class Command{
+    public Display execute(Display display){
         return display;
     }
-    
-    public void setDisplay(String message, ArrayList<Task> list) {
-        display.setMessage(message);
-        display.setList(list);
-    }
 }
 
-class InvalidCommand extends Command{
-    private final String MESSAGE_INVALID_COMMAND = "Pls enter a valid command";
-    
-    public InvalidCommand(){
-    }
-    
-    public Display execute(ArrayList<Task> taskList){
-        setDisplay(MESSAGE_INVALID_COMMAND, null);
-        return getDisplay();
-    }
-}
-
-class AddFloatCommand extends Command{
-    private String description;
-    private ArrayList<String> tags;
-    private final String MESSAGE_SUCCESS = "added: \"%2$s\"";
-    private final String MESSAGE_ERROR = "Error occured while updating to file";
-    
-    public AddFloatCommand(){
-        this.description = null;
-        this.tags = null;
-    }
-    
-    public AddFloatCommand(String description, ArrayList<String> tags){
-        this.description = description;
-        this.tags = tags;
-    }
-    
-    public String getDescription(){
-        return description;
-    }
-    
-    public String getSuccessMessage(){
-        return MESSAGE_SUCCESS;
-    }
-    
-    public String getErrorMessage(){
-        return MESSAGE_ERROR;
-    }
-    
-    public void setDescription(String description){
-        this.description = description;
-    } 
-    
-    public void setTags(ArrayList<String> tags){
-        this.tags = tags;
-    }
-    
-    public ArrayList<String> getTags(){
-        return tags;
-    }
-    
-    public Display execute(ArrayList<Task> taskList){
-        taskList.add(new Task(description, tags));
-        if(updateFile(taskList)){
-            History.saveList(taskList);
-            setDisplay(String.format(MESSAGE_SUCCESS, description), taskList);
-        }
-        else{
-            setDisplay(MESSAGE_ERROR, null);
-        }
-        return getDisplay();
-    }
-    
-    public boolean updateFile(ArrayList<Task> taskList) {
-        try{
-            Storage.editFile(taskList);
-            return true;
-        }catch(IOException error){
-            return false;
-        }
-    }
-}
-
-class AddTimedCommand extends AddFloatCommand{
-    private Calendar startDate;
-    private Calendar endDate;
-    
-    public AddTimedCommand(){
-        this.setDescription(null);
-        this.startDate = null;
-        this.endDate = null;
-        this.setTags(null);
-    }
-    
-    public AddTimedCommand(String description, Calendar startDate, Calendar endDate, ArrayList<String> tags){
-        this.setDescription(description);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.setTags(tags);
-    }
-    
-    public Display execute(ArrayList<Task> taskList){
-        /*if(userCommand.getDescription()== null){
-        return MESSAGE_NO_DESCRIPTION;
-        }*/
-        
-        taskList = addTaskToList(taskList);
-        if(updateFile(taskList)){
-            History.saveList(taskList);
-            setDisplay(String.format(getSuccessMessage(), getDescription()), taskList);
-        }
-        else{
-            setDisplay(getErrorMessage(), null);
-        }
-        return getDisplay();
-    }
-    
-    public ArrayList<Task> addTaskToList(ArrayList<Task> taskList) {
-        int i = 0;
-        for(i = 0; taskList.get(i).getStartDate()!= null; i++){
-            if(startDate.compareTo(taskList.get(i).getStartDate()) < 0){
-                break;
-            }
-        }
-        taskList.add(i, new Task(getDescription(), startDate, endDate, getTags()));
-        return taskList;
-    }
-}
-
+/*
 class DeleteCommand extends Command{
     private ArrayList<Integer> taskNumbers;
     private String invalidTaskNumbersMessage = "You have specified invalid task numbers: ";
@@ -300,7 +167,7 @@ class ShowCommand extends Command{
     }
     
     public Display execute(ArrayList<Task> taskList){
-        if(keyword.equalsIgnoreCase("all")){
+        if(keyword == null){
             setDisplay(null, History.getTaskList(0));
             return getDisplay();
         }
@@ -395,4 +262,4 @@ class EditCommand extends Command{
             taskList.get(taskNumber - 1).setStartDate(null);
         }
     }
-}
+}*/

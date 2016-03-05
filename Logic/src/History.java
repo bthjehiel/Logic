@@ -1,6 +1,6 @@
 /*
  * Written by Boh Tuang Hwee, Jehiel (A0139995E)
- * Last updated: 3/4/2016, 4:30AM
+ * Last updated: 3/5/2016, 8:00pm
  * CS2103
  */
 
@@ -9,17 +9,17 @@ import java.util.ArrayList;
 public class History {
     
     private static ArrayList<String> userInputs;
-    private static ArrayList<ArrayList<Task>> oldTasks;
-    private static int oldTasksIndex;
+    private static ArrayList<Display> oldDisplays;
+    private static int oldDisplaysIndex;
     
-    public static void saveList(ArrayList<Task> tasks) {
-        if(oldTasksIndex < (oldTasks.size() -1)){
-            for(int i = (oldTasks.size() - 1); i > oldTasksIndex; i--){
-                oldTasks.remove(i);
+    public static void saveDisplay(Display display) {
+        if(oldDisplaysIndex < (oldDisplays.size() -1)){
+            for(int i = (oldDisplays.size() - 1); i > oldDisplaysIndex; i--){
+                oldDisplays.remove(i);
             }
         }
-        oldTasks.add(tasks);
-        oldTasksIndex++;
+        oldDisplays.add(display);
+        oldDisplaysIndex++;
     }
     
     public static void saveUserInput(String userInput) {
@@ -27,23 +27,23 @@ public class History {
     }
     
     public static boolean atLastState() {
-        return (oldTasksIndex == (oldTasks.size() -1));
+        return (oldDisplaysIndex == (oldDisplays.size() -1));
     }
     
     public static boolean atFirstState() {
-        return (oldTasksIndex == 0);
+        return (oldDisplaysIndex == 0);
     }
 
     public static void decrementIndex() {
-        oldTasksIndex--;
+        oldDisplaysIndex--;
     }
 
     public static void incrementIndex() {
-        oldTasksIndex++;
+        oldDisplaysIndex++;
     }
 
-    public static ArrayList<Task> getTaskList(int offset) {
-        return oldTasks.get(oldTasksIndex + offset);
+    public static Display getDisplay(int offset) {
+        return oldDisplays.get(oldDisplaysIndex + offset);
     }
 
 }
